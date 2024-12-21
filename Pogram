@@ -1,0 +1,56 @@
+package main
+
+import (
+	"fmt"
+	"time"
+)
+
+func pembagianKelasIteratif(kelas []int) ([]int, []int) {
+	ganjil := []int{}
+	genap := []int{}
+	for _, k := range kelas {
+		if k%2 == 0 {
+			genap = append(genap, k)
+		} else {
+			ganjil = append(ganjil, k)
+		}
+	}
+	return ganjil, genap
+}
+
+func pembagianKelasRekursif(kelas []int, ganjil []int, genap []int) ([]int, []int) {
+	if len(kelas) == 0 {
+		return ganjil, genap
+	}
+	if kelas[0]%2 == 0 {
+		genap = append(genap, kelas[0])
+	} else {
+		ganjil = append(ganjil, kelas[0])
+	}
+	return pembagianKelasRekursif(kelas[1:], ganjil, genap)
+}
+
+func main() {
+	var n int
+	fmt.Print("Masukkan ukuran input: ")
+	_, err := fmt.Scan(&n)
+	if err != nil || n <= 0 {
+		fmt.Println("Input tidak valid. Harap masukkan angka bulat positif.")
+		return
+	}
+
+	kelas := make([]int, n)
+	for i := 0; i < n; i++ {
+		kelas[i] = i + 1
+	}
+
+	startIterative := time.Now()
+	ganjilIter, genapIter := pembagianKelasIteratif(kelas)
+	iterativeTime := time.Since(startIterative)
+	fmt.Printf("Iteratif - Jumlah Ganjil: %d, Jumlah Genap: %d, Waktu: %v\n", len(ganjilIter), len(genapIter), iterativeTime)
+
+	startRecursive := time.Now()
+	ganjilRecur, genapRecur := pembagianKelasRekursif(kelas, []int{}, []int{})
+	recursiveTime := time.Since(startRecursive)
+	fmt.Printf("Rekursif - Jumlah Ganjil: %d, Jumlah Genap: %d, Waktu: %v\n", len(ganjilRecur), len(genapRecur), recursiveTime)
+}
