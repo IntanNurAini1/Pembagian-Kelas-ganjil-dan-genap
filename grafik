@@ -1,0 +1,57 @@
+import time
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Iterative approach
+def pembagianKelasIteratif(kelas):
+    ganjil = []
+    genap = []
+    for k in kelas:
+        if k % 2 == 0:
+            genap.append(k)
+        else:
+            ganjil.append(k)
+    return ganjil, genap
+
+# Recursive approach
+def pembagianKelasRekursif(kelas, ganjil=None, genap=None):
+    if ganjil is None: ganjil = []
+    if genap is None: genap = []
+    
+    if len(kelas) == 0:
+        return ganjil, genap
+    if kelas[0] % 2 == 0:
+        genap.append(kelas[0])
+    else:
+        ganjil.append(kelas[0])
+    return pembagianKelasRekursif(kelas[1:], ganjil, genap)
+
+# Input size (1 to 10,000 elements)
+input_sizes = np.linspace(100, 10000, 10, dtype=int)
+iterative_times = []
+recursive_times = []
+
+# Measure performance for each input size
+for size in input_sizes:
+    kelas = list(range(1, size + 1))
+    
+    # Measure Iterative Time
+    start_time = time.time()
+    pembagianKelasIteratif(kelas)
+    iterative_times.append(time.time() - start_time)
+    
+    # Measure Recursive Time
+    start_time = time.time()
+    pembagianKelasRekursif(kelas)
+    recursive_times.append(time.time() - start_time)
+
+# Plot the results
+plt.figure(figsize=(10, 6))
+plt.plot(input_sizes, iterative_times, label='Iterative (Measured)', marker='o', color='orange')
+plt.plot(input_sizes, recursive_times, label='Recursive (Measured)', marker='o', color='red')
+plt.title('Performance Comparison: Iterative vs Recursive (n=10,000)')
+plt.xlabel('Input Size (Number of Elements)')
+plt.ylabel('Time (seconds)')
+plt.legend()
+plt.grid()
+plt.show()
