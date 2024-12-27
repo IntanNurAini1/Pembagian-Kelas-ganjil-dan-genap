@@ -5,9 +5,8 @@ import (
 	"time"
 )
 
-func pembagianKelasIteratif(kelas []int) ([]int, []int) {
-	ganjil := []int{}
-	genap := []int{}
+func pembagianIteratif(kelas []int) ([]int, []int) {
+	ganjil, genap := []int{}, []int{}
 	for _, k := range kelas {
 		if k%2 == 0 {
 			genap = append(genap, k)
@@ -18,7 +17,7 @@ func pembagianKelasIteratif(kelas []int) ([]int, []int) {
 	return ganjil, genap
 }
 
-func pembagianKelasRekursif(kelas []int, ganjil []int, genap []int) ([]int, []int) {
+func pembagianRekursif(kelas []int, ganjil, genap []int) ([]int, []int) {
 	if len(kelas) == 0 {
 		return ganjil, genap
 	}
@@ -27,30 +26,36 @@ func pembagianKelasRekursif(kelas []int, ganjil []int, genap []int) ([]int, []in
 	} else {
 		ganjil = append(ganjil, kelas[0])
 	}
-	return pembagianKelasRekursif(kelas[1:], ganjil, genap)
+	return pembagianRekursif(kelas[1:], ganjil, genap)
+}
+
+func ukurWaktu(f func([]int) ([]int, []int), kelas []int) time.Duration {
+	start := time.Now()
+	_, _ = f(kelas)
+	return time.Since(start)
 }
 
 func main() {
-	var n int
-	fmt.Print("Masukkan ukuran input: ")
-	_, err := fmt.Scan(&n)
-	if err != nil || n <= 0 {
-		fmt.Println("Input tidak valid. Harap masukkan angka bulat positif.")
-		return
+	var jumlah int
+	fmt.Println("Masukkan jumlah angka yang diinginkan (contoh: 10):")
+	fmt.Scanln(&jumlah)
+
+	kelas := []int{}
+	for i := 1; i <= jumlah; i++ {
+		kelas = append(kelas, i)
 	}
 
-	kelas := make([]int, n)
-	for i := 0; i < n; i++ {
-		kelas[i] = i + 1
-	}
+	iterTime := ukurWaktu(func(kelas []int) ([]int, []int) {
+		return pembagianIteratif(kelas)
+	}, kelas)
 
-	startIterative := time.Now()
-	ganjilIter, genapIter := pembagianKelasIteratif(kelas)
-	iterativeTime := time.Since(startIterative)
-	fmt.Printf("Iteratif - Jumlah Ganjil: %d, Jumlah Genap: %d, Waktu: %v\n", len(ganjilIter), len(genapIter), iterativeTime)
 
-	startRecursive := time.Now()
-	ganjilRecur, genapRecur := pembagianKelasRekursif(kelas, []int{}, []int{})
-	recursiveTime := time.Since(startRecursive)
-	fmt.Printf("Rekursif - Jumlah Ganjil: %d, Jumlah Genap: %d, Waktu: %v\n", len(ganjilRecur), len(genapRecur), recursiveTime)
+	recurTime := ukurWaktu(func(kelas []int) ([]int, []int) {
+		return pembagianRekursif(kelas, []int{}, []int{})
+	}, kelas)
+
+
+	fmt.Printf("Data kelas: %v\n", kelas)
+	fmt.Printf("Waktu Iteratif: %v\n", iterTime)
+	fmt.Printf("Waktu Rekursif: %v\n", recurTime)
 }
